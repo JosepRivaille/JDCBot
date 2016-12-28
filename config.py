@@ -1,6 +1,10 @@
+import os
+
+
 class Config(object):
-    SECRET_KEY = 'my_secret_token'  # Set here your secret key
-    PAGE_ACCESS_TOKEN = 'facebook_token'  # Set here facebook token
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    PAGE_ACCESS_TOKEN = os.environ.get('PAGE_ACCESS_TOKEN')
+    USER_GEONAMES = os.environ.get('USER_GEONAMES')
 
 
 class DevelopmentConfig(Config):

@@ -28,3 +28,17 @@ def quick_reply(recipient_id, title, quick_replies):
             'quick_replies': quick_replies
         }
     }
+
+
+def quick_reply_location(recipient_id, title):
+    return {
+        'recipient': {'id': recipient_id},
+        'message': {
+            'text': title,
+            'quick_replies': [
+                {
+                    'content_type': 'location'
+                }
+            ]
+        }
+    }

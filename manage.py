@@ -17,12 +17,13 @@ def web_hook():
         return 'Error validating token'
 
     elif request.method == 'POST':
+
         payload = request.get_json()
 
         for entry in payload['entry']:
             for message_event in entry['messaging']:
                 if 'message' in message_event:
-                    receive_message(message_event, app.config['PAGE_ACCESS_TOKEN'])
+                    receive_message(message_event, app.config['PAGE_ACCESS_TOKEN'], app.config['USER_GEONAMES'])
 
         return 'OK'
 

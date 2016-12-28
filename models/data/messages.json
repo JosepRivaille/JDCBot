@@ -7,10 +7,11 @@
     "type_message": "text_message"
   },
   {
-    "content": "Nice! I am pleased to confirm that your details have been successfully registered to my system. Hope to be useful to you!",
+    "content": "Nice one {first_name}! I am pleased to confirm that your details have been successfully registered to my system. Hope to be useful to you!",
     "context": "welcome",
     "type": "common",
     "order": 2,
+    "format": true,
     "type_message": "text_message"
   },
   {
@@ -52,6 +53,22 @@
     "type": "quick_reply",
     "context": "WEATHER",
     "ordrer": 2,
+    "type_message": "quick_reply_location"
+  },
+  {
+    "content": "I've seen that near {city} at {datetime}, located at {elevation}m above sea level, temperature is {temperature}C with {humidity}% of humidity and a pressure of {pressure}hpa. There are also winds {wind_speed}m/s.",
+    "type": "specific",
+    "context": "WEATHER",
+    "order": 1,
+    "format": true,
+    "data_model": true,
+    "type_message": "text_message"
+  },
+  {
+    "content": "Now that you know how weather data works with me you can send me your location whenever you want to check the weather ;)",
+    "type": "done",
+    "context": "WEATHER",
+    "order": 1,
     "type_message": "text_message"
   },
   {
@@ -73,6 +90,20 @@
     "type": "quick_reply",
     "context": "CINEMA",
     "ordrer": 1,
+    "type_message": "text_message"
+  },
+  {
+    "content": "If you need to contact my developer, type 'DEVELOPER'",
+    "type": "help",
+    "context": "help",
+    "order": 1,
+    "type_message": "text_message"
+  },
+  {
+    "content": "My name is Josep, please send me an email to 'josep.de.cid@gmail.com'",
+    "type": "help",
+    "context": "developer",
+    "order": 1,
     "type_message": "text_message"
   }
 ]
