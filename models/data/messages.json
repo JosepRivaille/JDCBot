@@ -1,0 +1,78 @@
+[
+  {
+    "content": "Yo! My name is JDCBot and I neew to check your information before start...!",
+    "context": "welcome",
+    "type": "common",
+    "order": 1,
+    "type_message": "text_message"
+  },
+  {
+    "content": "Nice! I am pleased to confirm that your details have been successfully registered to my system. Hope to be useful to you!",
+    "context": "welcome",
+    "type": "common",
+    "order": 2,
+    "type_message": "text_message"
+  },
+  {
+    "content": "What would you like to talk about?",
+    "context": "welcome",
+    "type": "common",
+    "order": 3,
+    "type_message": "quick_reply",
+    "identifier": "set_preference",
+    "replies": [
+      {
+        "title": "Weather",
+        "payload": "WEATHER"
+      },
+      {
+        "title": "Music",
+        "payload": "MUSIC"
+      },
+      {
+        "title": "Books",
+        "payload": "BOOKS"
+      }
+      ,
+      {
+        "title": "Cinema",
+        "payload": "CINEMA"
+      }
+    ]
+  },
+  {
+    "content": "Weather is a nice way to start!",
+    "type": "quick_reply",
+    "context": "WEATHER",
+    "ordrer": 1,
+    "type_message": "text_message"
+  },
+  {
+    "content": "Please tell me your location to give you an accurate prediction.",
+    "type": "quick_reply",
+    "context": "WEATHER",
+    "ordrer": 2,
+    "type_message": "text_message"
+  },
+  {
+    "content": "Nice choose! Which music style do you prefer?",
+    "type": "quick_reply",
+    "context": "MUSIC",
+    "ordrer": 1,
+    "type_message": "text_message"
+  },
+  {
+    "content": "Smart choose! Which is your favourite genre?",
+    "type": "quick_reply",
+    "context": "BOOKS",
+    "ordrer": 1,
+    "type_message": "text_message"
+  },
+  {
+    "content": "Smart choose! Which is your favourite genre?",
+    "type": "quick_reply",
+    "context": "CINEMA",
+    "ordrer": 1,
+    "type_message": "text_message"
+  }
+]
