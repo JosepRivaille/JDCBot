@@ -1,5 +1,8 @@
 import requests
 import json
+import datetime
+import threading
+import time
 
 from models import UserModel
 from models import MessageModel
@@ -8,6 +11,8 @@ from data_structs import *
 
 global_token = None
 global_geonames_user = None
+
+MAX_TIME = 60 * 5  # 5 Minutes
 
 
 def receive_message(event, token, geonames_user):
@@ -32,7 +37,7 @@ def handle_action(sender_id, message):
 
 
 def try_send_message(user, message):
-
+    flag = check_last_connection(user)
     is_special_message = validate_quick_reply(user, message)
 
     if not is_special_message:
@@ -46,8 +51,23 @@ def try_send_message(user, message):
             UserModel.delete_collection()
             view_check = create_view_check(user)
             call_send_api(view_check)
-        else:
+        elif not flag:
             send_loop_messages(user, 'not_found', 'not_found')
+
+
+def check_last_connection(user):
+    now = datetime.datetime.now()
+    last_message = user.get('last_message', now)
+
+    flag = (now - last_message).seconds >= MAX_TIME
+    if flag:
+        programming_message(user)
+        send_loop_messages(user, 'specific', 'return_user', user)
+
+    user['last_message'] = now
+    save_user_async(user)
+
+    return flag
 
 
 def register_step(sender_id):
@@ -61,7 +81,8 @@ def register_step(sender_id):
     return UserModel.new(first_name=first_name,
                          last_name=last_name,
                          gender=gender,
-                         user_id=sender_id)
+                         user_id=sender_id,
+                         created_at=datetime.datetime.now())
 
 
 def validate_quick_reply(user, message):
@@ -84,7 +105,7 @@ def set_user_reply(user, q_reply):
             preferences.append(payload)
 
         user['preferences'] = payload
-        UserModel.save(user)
+        save_user_async(user)
         send_loop_messages(user, 'quick_reply', payload)
 
 
@@ -108,7 +129,7 @@ def set_user_location(user, lat, lng):
         'city': data_model['city']
     })
     user['locations'] = locations
-    UserModel.save(user)
+    save_user_async(user)
 
     send_loop_messages(user, 'specific', 'WEATHER', data_model)
 
@@ -120,7 +141,7 @@ def check_actions(user, action):
     if action_done not in actions:
         actions.append(action_done)
         user['actions'] = actions
-        UserModel.save(user)
+        save_user_async(user)
 
         send_loop_messages(user, 'done', action)
 
@@ -187,3 +208,22 @@ def call_geosname_api(lat, lng):
         }
     else:
         print(response)
+
+
+def save_user_async(user):
+    def async_method(user_data):
+        UserModel.save(user_data)
+
+    async_save = threading.Thread(name='async_method', target=async_method, args=(user, ))
+    async_save.start()
+
+
+def programming_message(user):
+    def send_reminder(user_data):
+        today = datetime.datetime.today()
+        future = datetime.datetime(today.year, today.month, today.day, today.hour, today.minute + 5)
+        time.sleep((future - today).seconds)
+        send_loop_messages(user_data, 'reminder', 'reminder')
+
+    async_message = threading.Thread(name='send_reminder', target=send_reminder, args=(user, ))
+    async_message.start()

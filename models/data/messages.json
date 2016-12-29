@@ -145,5 +145,22 @@
     "context": "not_found",
     "order": 1,
     "type_message": "text_message"
+  },
+  {
+    "content": "Nice to see you again {first_name}!",
+    "type": "specific",
+    "context": "return_user",
+    "order": 1,
+    "format": true,
+    "data_model": true,
+    "type_message": "text_message"
+  },
+  {
+    "content": "Remember that you can always talk to me!",
+    "type": "reminder",
+    "context": "reminder",
+    "order": 1,
+    "type_message": "text_message"
+
   }
 ]
