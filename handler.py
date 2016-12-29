@@ -27,21 +27,27 @@ def handle_action(sender_id, message):
     if user_data is None:
         user = register_step(sender_id)
         send_loop_messages(user, 'common', 'welcome')
-    elif message.get('text', '') == 'FORGET':
-        UserModel.delete_collection()
     else:
         try_send_message(user_data, message)
 
 
 def try_send_message(user, message):
-    validate_quick_reply(user, message)
 
-    message_content = message.get('text', '')
+    is_special_message = validate_quick_reply(user, message)
 
-    if 'HELP' in message_content:
-        send_loop_messages(user, 'help', 'help')
-    elif 'DEVELOPER' in message_content:
-        send_loop_messages(user, 'help', 'developer')
+    if not is_special_message:
+        message_content = message.get('text', '')
+
+        if 'HELP' in message_content:
+            send_loop_messages(user, 'help', 'help')
+        elif 'DEVELOPER' in message_content:
+            send_loop_messages(user, 'help', 'developer')
+        elif 'FORGET' in message_content:
+            UserModel.delete_collection()
+            view_check = create_view_check(user)
+            call_send_api(view_check)
+        else:
+            send_loop_messages(user, 'not_found', 'not_found')
 
 
 def register_step(sender_id):
@@ -65,6 +71,8 @@ def validate_quick_reply(user, message):
         set_user_reply(user, is_quick_reply)
     elif has_attachments:
         set_user_attachments(user, has_attachments)
+
+    return is_quick_reply or has_attachments
 
 
 def set_user_reply(user, q_reply):
@@ -136,6 +144,8 @@ def get_message_data(user, message, data_model):
         return create_quick_reply(user, message)
     elif type_message == 'quick_reply_location':
         return create_location_ask(user, message)
+    elif type_message == 'template':
+        return create_template(user, message)
 
 
 def call_send_api(data):
@@ -146,7 +156,7 @@ def call_send_api(data):
     if response.status_code == 200:
         print('Message sent successfully')
     else:
-        print('Error: ' + str(response.status_code))
+        print(response.text)
 
 
 def call_user_api(user_id):
@@ -156,8 +166,7 @@ def call_user_api(user_id):
     if response.status_code == 200:
         return json.loads(response.text)
     else:
-        print('Error: ' + str(response.status_code))
-        return None
+        print(response)
 
 
 def call_geosname_api(lat, lng):
@@ -176,3 +185,5 @@ def call_geosname_api(lat, lng):
             'elevation': weather['elevation'],
             'wind_speed': weather['windSpeed']
         }
+    else:
+        print(response)

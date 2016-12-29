@@ -100,9 +100,49 @@
     "type_message": "text_message"
   },
   {
-    "content": "My name is Josep, please send me an email to 'josep.de.cid@gmail.com'",
+    "content": "Contact",
     "type": "help",
     "context": "developer",
+    "order": 1,
+    "type_message": "template",
+    "template_type": "generic",
+    "elements": [
+      {
+        "title": "Josep de Cid",
+        "subtitle": "Computer Scientist",
+        "item_url": "http://josepdc.co.nf",
+        "image_url": "https://avatars1.githubusercontent.com/u/11754473?v=3&s=460",
+        "buttons": [
+          {
+            "type": "web_url",
+            "url": "https://www.facebook.com/2fa60ca63251d5b8a2250770a80510a6",
+            "title": "Facebook"
+          },
+          {
+            "type": "web_url",
+            "url": "https://twitter.com/josepdecid",
+            "title": "Twitter"
+          },
+          {
+            "type": "web_url",
+            "url": "https://github.com/JosepRivaille",
+            "title": "GitHub"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "content": "Contact me is something happens!",
+    "type": "help",
+    "context": "developer",
+    "order": 2,
+    "type_message": "text_message"
+  },
+  {
+    "content": "Sorry I couldn't understand what you said!",
+    "type": "not_found",
+    "context": "not_found",
     "order": 1,
     "type_message": "text_message"
   }
