@@ -51,16 +51,6 @@ def quick_reply_location(recipient_id, title):
     }
 
 
-def element_template(title, subtitle, item_url, image_url, buttons):
-    return {
-        'title': title,
-        'subtitle': subtitle,
-        'item_url': item_url,
-        'image_url': image_url,
-        'buttons': buttons
-    }
-
-
 def template_message_generic(recipient_id, elements):
     return {
         'recipient': {'id': recipient_id},

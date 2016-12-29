@@ -1,5 +1,3 @@
-import requests
-import json
 import datetime
 import threading
 import time
@@ -7,7 +5,16 @@ import time
 from models import UserModel
 from models import MessageModel
 
-from data_structs import *
+from data_structs import create_template
+from data_structs import create_view_check
+from data_structs import create_quick_reply
+from data_structs import create_text_message
+from data_structs import create_location_ask
+from data_structs import create_type_simulation
+
+from api import call_send_api
+from api import call_user_api
+from api import call_geosname_api
 
 global_token = None
 global_geonames_user = None
@@ -26,14 +33,28 @@ def receive_message(event, token, geonames_user):
     handle_action(sender_id, message)
 
 
+def receive_postback(event, token):
+    sender_id = event['sender']['id']
+    payload = event['postback']['payload']
+
+    global global_token
+    global_token = token
+
+    handle_postback(sender_id, payload)
+
+
 def handle_action(sender_id, message):
     user_data = UserModel.find(user_id=sender_id)
 
     if user_data is None:
-        user = register_step(sender_id)
-        send_loop_messages(user, 'common', 'welcome')
+        register_step(sender_id)
     else:
         try_send_message(user_data, message)
+
+
+def handle_postback(sender_id, payload):
+    if payload == 'START_CHAT':
+        register_step(sender_id)
 
 
 def try_send_message(user, message):
@@ -50,7 +71,7 @@ def try_send_message(user, message):
         elif 'FORGET' in message_content:
             UserModel.delete_collection()
             view_check = create_view_check(user)
-            call_send_api(view_check)
+            call_send_api(view_check, global_token)
         elif not flag:
             send_loop_messages(user, 'not_found', 'not_found')
 
@@ -72,17 +93,19 @@ def check_last_connection(user):
 
 def register_step(sender_id):
     # Get user data
-    user_data = call_user_api(sender_id)
+    user_data = call_user_api(sender_id, global_token)
     first_name = user_data['first_name']
     last_name = user_data['last_name']
     gender = user_data['gender']
 
     # Persist user data
-    return UserModel.new(first_name=first_name,
+    user = UserModel.new(first_name=first_name,
                          last_name=last_name,
                          gender=gender,
                          user_id=sender_id,
                          created_at=datetime.datetime.now())
+
+    send_loop_messages(user, 'common', 'welcome')
 
 
 def validate_quick_reply(user, message):
@@ -120,7 +143,7 @@ def set_user_attachments(user, attachments):
 
 
 def set_user_location(user, lat, lng):
-    data_model = call_geosname_api(lat, lng)
+    data_model = call_geosname_api(lat, lng, global_geonames_user)
 
     locations = user.get('locations', [])
     locations.append({
@@ -151,10 +174,10 @@ def send_loop_messages(user, message_type='', context='', data_model=None):
     for message in messages:
         # Simulate typing
         type_simulation = create_type_simulation(user)
-        call_send_api(type_simulation)
+        call_send_api(type_simulation, global_token)
         # Send message
         type_message = get_message_data(user, message, data_model)
-        call_send_api(type_message)
+        call_send_api(type_message, global_token)
 
 
 def get_message_data(user, message, data_model):
@@ -167,47 +190,6 @@ def get_message_data(user, message, data_model):
         return create_location_ask(user, message)
     elif type_message == 'template':
         return create_template(user, message)
-
-
-def call_send_api(data):
-    response = requests.post('https://graph.facebook.com/v2.6/me/messages',
-                             params={'access_token': global_token},
-                             data=json.dumps(data),
-                             headers={'Content-type': 'application/json'})
-    if response.status_code == 200:
-        print('Message sent successfully')
-    else:
-        print(response.text)
-
-
-def call_user_api(user_id):
-    response = requests.get('https://graph.facebook.com/v2.6/' + user_id,
-                            params={'access_token': global_token})
-
-    if response.status_code == 200:
-        return json.loads(response.text)
-    else:
-        print(response)
-
-
-def call_geosname_api(lat, lng):
-    response = requests.get('http://api.geonames.org/findNearByWeatherJSON',
-                            params={'lat': lat, 'lng': lng, 'username': global_geonames_user})
-
-    if response.status_code == 200:
-        weather = json.loads(response.text)['weatherObservation']
-
-        return {
-            'city': weather['stationName'],
-            'datetime': weather['datetime'],
-            'temperature': weather['temperature'],
-            'humidity': weather['humidity'],
-            'pressure': weather['hectoPascAltimeter'],
-            'elevation': weather['elevation'],
-            'wind_speed': weather['windSpeed']
-        }
-    else:
-        print(response)
 
 
 def save_user_async(user):

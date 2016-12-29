@@ -1,4 +1,10 @@
-from structs import *
+from structs import simulate_message_typing
+from structs import check_message_viewed
+from structs import text_message
+from structs import item_quick_reply
+from structs import quick_reply
+from structs import quick_reply_location
+from structs import template_message_generic
 
 
 def create_type_simulation(user):
@@ -28,11 +34,5 @@ def create_location_ask(user, data):
     return quick_reply_location(user['user_id'], data['content'])
 
 
-def create_template_element(element):
-    buttons = element['buttons']
-    return element_template(element['title'], element['subtitle'], element['item_url'], element['image_url'], buttons)
-
-
 def create_template(user, data):
-    elements = [create_template_element(element) for element in data['elements']]
-    return template_message_generic(user['user_id'], elements)
+    return template_message_generic(user['user_id'], data['elements'])
