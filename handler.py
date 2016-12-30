@@ -5,12 +5,16 @@ import time
 from models import UserModel
 from models import MessageModel
 
-from data_structs import create_template
-from data_structs import create_view_check
-from data_structs import create_quick_reply
-from data_structs import create_text_message
-from data_structs import create_location_ask
-from data_structs import create_type_simulation
+from data import create_template
+from data import create_view_check
+from data import create_quick_reply
+from data import create_text_message
+from data import create_location_ask
+from data import create_type_simulation
+from data import create_image_message
+from data import create_video_message
+from data import create_audio_message
+from data import create_file_message
 
 from api import call_send_api
 from api import call_user_api
@@ -72,6 +76,14 @@ def try_send_message(user, message):
             UserModel.delete_collection()
             view_check = create_view_check(user)
             call_send_api(view_check, global_token)
+        elif 'RANDOM IMAGE' in message_content:
+            send_loop_messages(user, 'image', 'common')
+        elif 'RANDOM VIDEO' in message_content:
+            send_loop_messages(user, 'video', 'common')
+        elif 'RANDOM AUDIO' in message_content:
+            send_loop_messages(user, 'audio', 'common')
+        elif 'RANDOM FILE' in message_content:
+            send_loop_messages(user, 'file', 'common')
         elif not flag:
             send_loop_messages(user, 'not_found', 'not_found')
 
@@ -190,6 +202,14 @@ def get_message_data(user, message, data_model):
         return create_location_ask(user, message)
     elif type_message == 'template':
         return create_template(user, message)
+    elif type_message == 'image':
+        return create_image_message(user, message)
+    elif type_message == 'video':
+        return create_video_message(user, message)
+    elif type_message == 'audio':
+        return create_audio_message(user, message)
+    elif type_message == 'file':
+        return create_file_message(user, message)
 
 
 def save_user_async(user):

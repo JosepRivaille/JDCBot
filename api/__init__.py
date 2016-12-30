@@ -10,6 +10,7 @@ def call_send_api(data, token):
     if response.status_code == 200:
         print('Message sent successfully')
     else:
+        # Error feedback
         print(response.text)
 
 
@@ -28,8 +29,19 @@ def get_started_data():
         'setting_type': 'call_to_actions',
         'thread_state': 'new_thread',
         'call_to_actions': [
-            {'payload': 'START_CHAT'}
+            {
+                'payload': 'START_CHAT'
+            }
         ]
+    }
+
+
+def get_greetings_data():
+    return {
+        'setting_type': 'greeting',
+        'greeting': {
+            'text': 'Hey {{user_first_name}}, chat with me and ask anything that you want!'
+        }
     }
 
 
@@ -48,6 +60,16 @@ def call_delete_started_button_api(token):
                                params={'access_token': token},
                                data=json.dumps(get_started_data()),
                                headers={'Content-type': 'application/json'})
+
+    if response.status_code == 200:
+        print(json.loads(response.text))
+
+
+def call_greeting_text_api(token):
+    response = requests.post('https://graph.facebook.com/v2.6/me/thread_settings',
+                             params={'access_token': token},
+                             data=json.dumps(get_greetings_data()),
+                             headers={'Content-type': 'application/json'})
 
     if response.status_code == 200:
         print(json.loads(response.text))

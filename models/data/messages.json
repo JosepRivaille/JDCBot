@@ -161,6 +161,33 @@
     "context": "reminder",
     "order": 1,
     "type_message": "text_message"
-
+  },
+  {
+    "type": "image",
+    "context": "common",
+    "order": 1,
+    "url": "https://mfiles.alphacoders.com/599/599944.jpg",
+    "type_message": "image"
+  },
+  {
+    "type": "video",
+    "context": "common",
+    "order": 1,
+    "url": "http://techslides.com/demos/sample-videos/small.mp4",
+    "type_message": "video"
+  },
+  {
+    "type": "audio",
+    "context": "common",
+    "order": 1,
+    "url": "URL HERE",
+    "type_message": "audio"
+  },
+  {
+    "type": "file",
+    "context": "common",
+    "order": 1,
+    "url": "URL HERE",
+    "type_message": "file"
   }
 ]

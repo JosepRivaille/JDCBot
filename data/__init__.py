@@ -5,6 +5,10 @@ from structs import item_quick_reply
 from structs import quick_reply
 from structs import quick_reply_location
 from structs import template_message_generic
+from structs import image_message
+from structs import video_message
+from structs import audio_message
+from structs import file_message
 
 
 def create_type_simulation(user):
@@ -36,3 +40,27 @@ def create_location_ask(user, data):
 
 def create_template(user, data):
     return template_message_generic(user['user_id'], data['elements'])
+
+
+def create_image_message(user, data):
+    url = data.get('url', '')
+    # Imgur API
+    return image_message(user['user_id'], url)
+
+
+def create_video_message(user, data):
+    url = data.get('url', '')
+    # Video API
+    return video_message(user['user_id'], url)
+
+
+def create_audio_message(user, data):
+    url = data.get('url', '')
+    # Audio API (Spotify?)
+    return audio_message(user['user_id'], url)
+
+
+def create_file_message(user, data):
+    url = data.get('url', '')
+    # File API (Dropbox?)
+    return file_message(user['user_id'], url)

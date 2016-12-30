@@ -6,6 +6,7 @@ from config import DevelopmentConfig
 from handler import receive_message
 from handler import receive_postback
 
+from api import call_greeting_text_api
 from api import call_set_started_button_api
 
 app = Flask(__name__)
@@ -39,5 +40,6 @@ def index():
 
 
 if __name__ == '__main__':
+    call_greeting_text_api(app.config['PAGE_ACCESS_TOKEN'])
     call_set_started_button_api(app.config['PAGE_ACCESS_TOKEN'])
     app.run(port=8000)
